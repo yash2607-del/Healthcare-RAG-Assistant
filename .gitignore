@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+dist/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database & Chat History
+Server/data/chroma/
+Server/data/history/
+
+# Logs
+*.log
+logs/
