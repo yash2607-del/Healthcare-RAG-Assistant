@@ -38,6 +38,10 @@ class ExcelLoader:
         all_documents: List[Document] = []
 
         for sheet_name in xl.sheet_names:
+            if sheet_name.strip().lower() != 'external':
+                print(f"  Skipping sheet: '{sheet_name}'")
+                continue
+                
             print(f"  Processing sheet: '{sheet_name}'")
             df = xl.parse(sheet_name)
 
@@ -47,13 +51,52 @@ class ExcelLoader:
             # Normalize column names (strip whitespace)
             df.columns = [str(c).strip() for c in df.columns]
 
-            for idx, row in df.iterrows():
+            # Analyze row 0 for sub-headers and exclude B2B/P&L to avoid confusing the LLM with wrong prices
+            sub_headers = df.iloc[0] if not df.empty else None
+            
+            col_definitions = []
+            last_main_col = ""
+            
+            for col in df.columns:
+                col_name = str(col).strip()
+                sub = str(sub_headers.get(col, '')).strip() if sub_headers is not None else ''
+                
+                if not col_name.startswith('Unnamed:') and not col_name.startswith('Base Rate'):
+                    if col_name not in ['Feb', 'Mar', 'Apr', 'Total']:
+                        last_main_col = col_name
+                
+                include = True
+                final_name = col_name
+                
+                if 'B2B' in sub.upper() or 'P&L' in sub.upper() or 'COUNT' in sub.upper() or 'NET MRP' in sub.upper():
+                    include = False
+                elif 'MRP' in sub.upper():
+                    final_name = f"{last_main_col} MRP Price".strip()
+                elif sub and sub != 'nan':
+                    final_name = sub.title()
+                elif col_name.startswith('Unnamed:'):
+                    include = False
+                    
+                col_definitions.append({
+                    'original': col,
+                    'clean_name': final_name,
+                    'include': include
+                })
+
+            # Skip the first row since it contains sub-headers
+            df_data = df.iloc[1:]
+
+            for idx, row in df_data.iterrows():
                 # Build a natural-language text block from all columns
                 parts = []
-                for col in df.columns:
-                    val = row.get(col)
-                    if pd.notna(val) and str(val).strip():
-                        parts.append(f"{col}: {str(val).strip()}")
+                for col_def in col_definitions:
+                    if not col_def['include']:
+                        continue
+                        
+                    val = row.get(col_def['original'])
+                    # Ignore empty values and dashes
+                    if pd.notna(val) and str(val).strip() and str(val).strip() != '-':
+                        parts.append(f"{col_def['clean_name']}: {str(val).strip()}")
 
                 if not parts:
                     continue  # Skip empty rows

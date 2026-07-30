@@ -6,13 +6,14 @@ import ChatMessage from './ChatMessage';
 import Loader from './Loader';
 import SuggestedQuestions from './SuggestedQuestions';
 
-export default function ChatBox() {
+export default function ChatBox({ initialQuery, setInitialQuery }) {
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'bot',
-      text: "Hello! I am the Lord Diagnostics AI Assistant. I can help you with test pricing, sample types, and methodologies. How can I assist you today?",
-      source: 'chitchat'
+      text: "Welcome to Lord's pathology! Your trusted partner in health with accurate test information, nearby centers, and compassionate care. How can we assist you today?",
+      source: 'chitchat',
+      timestamp: new Date()
     }
   ]);
   const [input, setInput] = useState('');
@@ -25,12 +26,13 @@ export default function ChatBox() {
   };
   useEffect(scrollToBottom, [messages, isLoading]);
 
+
   const handleSend = async (queryText) => {
     const text = queryText || input;
     if (!text.trim()) return;
 
     // Add user message
-    const userMsg = { id: Date.now(), sender: 'user', text: text.trim() };
+    const userMsg = { id: Date.now(), sender: 'user', text: text.trim(), timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
@@ -45,7 +47,8 @@ export default function ChatBox() {
         id: Date.now() + 1, 
         sender: 'bot', 
         text: response.data.answer,
-        source: response.data.source
+        source: response.data.source,
+        timestamp: new Date()
       };
       
       setMessages(prev => [...prev, botMsg]);
@@ -57,6 +60,13 @@ export default function ChatBox() {
     }
   };
 
+  useEffect(() => {
+    if (initialQuery) {
+      handleSend(initialQuery);
+      if (setInitialQuery) setInitialQuery('');
+    }
+  }, [initialQuery]);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -65,11 +75,11 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="my-auto flex flex-col min-h-[150px] max-h-full w-full max-w-4xl mx-auto glass rounded-3xl overflow-hidden shadow-2xl border border-border/50 relative transition-all duration-500 ease-in-out">
+    <div className="flex flex-col h-full w-full max-w-4xl mx-auto glass rounded-3xl overflow-hidden shadow-2xl border border-border/50 relative transition-all duration-500 ease-in-out">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-2">
+      <div className="flex-1 overflow-y-auto px-3 pt-4 pb-1 space-y-2 flex flex-col">
         {messages.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} />
+          <ChatMessage key={msg.id} message={msg} onAction={handleSend} />
         ))}
         {isLoading && <Loader />}
         
@@ -82,27 +92,27 @@ export default function ChatBox() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-surface/50 border-t border-border/50 backdrop-blur-md">
+      <div className="p-3 pb-4 bg-surface/50 border-t border-border/50 backdrop-blur-md">
         <div className="relative flex items-end gap-2 max-w-3xl mx-auto">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about a blood test, price, or methodology..."
-            className="w-full min-h-[56px] max-h-[150px] p-4 pr-14 rounded-2xl glass-input resize-none text-sm leading-relaxed"
-            rows={1}
+            placeholder="Ask about a blood test, price, or methodology or nearby centers..."
+            className="w-full min-h-11 max-h-30 py-2 px-3 pr-12 rounded-xl bg-white border-2 border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none text-sm text-black placeholder:text-gray-700 shadow-sm transition-all"
+            rows={2}
             disabled={isLoading}
           />
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || isLoading}
-            className="absolute right-2 bottom-2 p-2.5 rounded-xl bg-primary text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+            className="absolute right-1.5 bottom-1.5 p-2 rounded-lg bg-primary text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
           >
-            <Send size={18} />
+            <Send size={16} />
           </button>
         </div>
-        <p className="text-center text-[10px] text-text-muted mt-3">
-          Before booking any test, doctors' consultation is recommended
+        <p className="text-center text-[10px] font-semibold mt-2 mb-0 text-text-muted">
+          Before consulting about test, doctor recommendation is needed
         </p>
       </div>
     </div>

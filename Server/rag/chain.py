@@ -1,6 +1,6 @@
-from langchain_classic.chains.history_aware_retriever import create_history_aware_retriever
 from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
+from langchain_classic.chains.history_aware_retriever import create_history_aware_retriever
 from langchain_core.runnables.history import RunnableWithMessageHistory
 import sys
 import os
@@ -15,39 +15,34 @@ from retrieval.retriever import AdvancedRetriever
 class RAGChain:
     """
     Constructs the final conversational RAG chain.
-    It combines the AdvancedRetriever (with Cross-Encoder), the AnswerGenerator,
-    and the File-based Conversation History.
     """
     def __init__(self):
-        print("Initializing complete Conversational RAG Chain...")
+        print("Initializing Conversational RAG Chain...")
         
         # 1. Initialize Generator (LLM) and Prompts
         self.generator = AnswerGenerator()
         llm = self.generator.get_llm()
         
         # 2. Initialize Retriever
-        # We pass the LLM to AdvancedRetriever to enable MultiQuery generation for better recall!
         self.advanced_retriever = AdvancedRetriever(llm=llm)
         retriever = self.advanced_retriever.get_retriever()
         
-        # 3. Create History-Aware Retriever
-        # This rephrases the user's question to be standalone if it references chat history
-        self.history_aware_retriever = create_history_aware_retriever(
+        # 3. Create History-Aware Retriever to rephrase follow-ups!
+        history_aware_retriever = create_history_aware_retriever(
             llm, retriever, self.generator.get_contextualize_q_prompt()
         )
         
         # 4. Create Question-Answering Chain
-        # This generates the final answer using the retrieved context
         self.question_answer_chain = create_stuff_documents_chain(
             llm, self.generator.get_qa_prompt()
         )
         
         # 5. Combine into Final RAG Chain
         self.rag_chain = create_retrieval_chain(
-            self.history_aware_retriever, self.question_answer_chain
+            history_aware_retriever, self.question_answer_chain
         )
         
-        # 6. Wrap with Message History
+        # 5. Wrap with Message History
         self.conversational_rag_chain = RunnableWithMessageHistory(
             self.rag_chain,
             get_session_history,
@@ -60,7 +55,7 @@ class RAGChain:
         """
         Executes the RAG pipeline for a given query and session.
         """
-        print(f"Executing RAG Chain for session: '{session_id}', Query: '{query}'")
+        print(f"Executing Fast RAG Chain for session: '{session_id}', Query: '{query}'")
         response = self.conversational_rag_chain.invoke(
             {"input": query},
             config={"configurable": {"session_id": session_id}}

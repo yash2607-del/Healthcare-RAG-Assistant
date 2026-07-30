@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
 export default function ThemeToggle() {
-  // Default to dark mode as requested
-  const [theme, setTheme] = useState('dark');
+  // Default to light mode as requested
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const root = window.document.documentElement;

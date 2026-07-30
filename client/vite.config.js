@@ -5,4 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/widget.js`,
+        chunkFileNames: `assets/widget.js`,
+        assetFileNames: `assets/widget.[ext]`
+      }
+    }
+  }
 })

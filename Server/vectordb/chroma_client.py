@@ -1,4 +1,8 @@
 import os
+import sys
+# Add the Server directory to the path so it can find embeddings package when run directly
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from typing import List
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
