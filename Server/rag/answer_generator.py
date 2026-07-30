@@ -1,4 +1,4 @@
-from langchain_community.llms import Ollama
+from langchain_ollama import ChatOllama
 from rag.prompts import qa_prompt, contextualize_q_prompt
 
 class AnswerGenerator:
@@ -6,9 +6,9 @@ class AnswerGenerator:
     Manages the LLM used for generation and provides the conversational prompts.
     """
     def __init__(self, model_name="llama3", temperature=0.2):
-        print(f"Initializing Answer Generator with Ollama model: {model_name}")
+        print(f"Initializing Answer Generator with ChatOllama model: {model_name}")
         
-        self.llm = Ollama(
+        self.llm = ChatOllama(
             model=model_name, 
             temperature=temperature
         )

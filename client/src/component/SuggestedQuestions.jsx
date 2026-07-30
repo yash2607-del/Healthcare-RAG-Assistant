@@ -29,7 +29,7 @@ export default function SuggestedQuestions({ onSelect }) {
 
   return (
     <div className="flex flex-col gap-2 mt-1 w-full">
-      <div className="flex items-center gap-1 text-sm font-medium px-2 justify-center mb-1">
+      <div className="flex items-center gap-1 text-sm font-medium px-2 justify-center mb-1 text-text dark:text-white">
         <span>How can I help you today?</span>
       </div>
       
