@@ -67,7 +67,7 @@ export default function ChatMessage({ message, onAction }) {
           {isUser ? `You • ${formatTime(message.timestamp)}` : formatTime(message.timestamp)}
         </span>
         <div className={cn(
-          "px-5 py-2.5 rounded-2xl shadow-sm text-sm whitespace-pre-wrap leading-relaxed",
+          "px-5 py-2.5 rounded-2xl shadow-sm text-sm whitespace-pre-wrap word-break wrap-break-words leading-relaxed",
           isUser 
             ? "bg-primary text-white rounded-tr-none" 
             : "bg-surface text-text border border-border rounded-tl-none"

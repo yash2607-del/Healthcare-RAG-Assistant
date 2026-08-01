@@ -32,14 +32,25 @@ class RAGChain:
             llm, retriever, self.generator.get_contextualize_q_prompt()
         )
         
+        from langchain_core.runnables import RunnableLambda
+        
         # 4. Create Question-Answering Chain
-        self.question_answer_chain = create_stuff_documents_chain(
+        self.question_answer_chain_base = create_stuff_documents_chain(
             llm, self.generator.get_qa_prompt()
         )
         
-        # 5. Combine into Final RAG Chain
+        def check_context(inputs):
+            if not inputs.get("context") or len(inputs["context"]) == 0:
+                print("No relevant context found. Short-circuiting LLM generation for speed.")
+                return "Right now, I have no knowledge regarding the query. Please contact customer care at +91 8655460980 or visit our official website at lordspath.com"
+            return self.question_answer_chain_base.invoke(inputs)
+
+        self.question_answer_chain = RunnableLambda(check_context)
+        
+        # 5. Combine into Final RAG Chain (Optimized for Speed)
+        # Using base retriever instead of history_aware_retriever cuts LLM generation time in half
         self.rag_chain = create_retrieval_chain(
-            history_aware_retriever, self.question_answer_chain
+            retriever, self.question_answer_chain
         )
         
         # 5. Wrap with Message History
@@ -60,6 +71,12 @@ class RAGChain:
             {"input": query},
             config={"configurable": {"session_id": session_id}}
         )
+        
+        # Empty Context Short-Circuit Fix
+        if "context" in response and len(response["context"]) == 0:
+            print("No relevant context found. Short-circuiting and using fallback message.")
+            response["answer"] = "Right now, I have no knowledge regarding the query. Please contact customer care at +91 8655460980 or visit our official website at lordspath.com"
+            
         return response
 
 if __name__ == "__main__":

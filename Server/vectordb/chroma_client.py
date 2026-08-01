@@ -43,13 +43,13 @@ class ChromaClient:
             
         print(f"Successfully finished ingestion. Data is persisted to {self.persist_directory}")
 
-    def as_retriever(self, search_kwargs=None):
+    def as_retriever(self, search_type="similarity", search_kwargs=None):
         """
         Returns a LangChain retriever interface for the vector store.
         """
         if search_kwargs is None:
             search_kwargs = {"k": 5}
-        return self.vector_store.as_retriever(search_kwargs=search_kwargs)
+        return self.vector_store.as_retriever(search_type=search_type, search_kwargs=search_kwargs)
 
 if __name__ == "__main__":
     from ingestion.excel_loader import ExcelLoader
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     
     # 1. Load Documents
     base_dir = os.path.dirname(os.path.dirname(__file__))
-    excel_path = os.path.join(base_dir, 'data', 'excel', 'Lord Test MRP and DOS Complete Details copy.xlsx')
+    excel_path = os.path.join(base_dir, 'data', 'excel', 'Lord Test MRP and DOS Complete Details External.xlsx')
     
     print("Step 1: Loading documents from Excel...")
     loader = ExcelLoader(excel_path)

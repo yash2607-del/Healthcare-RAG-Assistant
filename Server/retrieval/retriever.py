@@ -13,11 +13,14 @@ class AdvancedRetriever:
     Fast Retriever that utilizes:
     1. Base retrieval from ChromaDB (fetching candidates).
     """
-    def __init__(self, chroma_client: Optional[ChromaClient] = None, llm: Optional[BaseChatModel] = None, initial_k: int = 5, final_k: int = 3):
+    def __init__(self, chroma_client: Optional[ChromaClient] = None, llm: Optional[BaseChatModel] = None, initial_k: int = 5, final_k: int = 15):
         self.chroma_client = chroma_client or ChromaClient()
         
         # 1. Base Retriever
-        self.retriever = self.chroma_client.as_retriever(search_kwargs={"k": final_k})
+        self.retriever = self.chroma_client.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 20}
+        )
         
     def get_retriever(self):
         return self.retriever
