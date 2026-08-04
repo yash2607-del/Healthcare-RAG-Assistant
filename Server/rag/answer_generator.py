@@ -5,7 +5,7 @@ class AnswerGenerator:
     """
     Manages the LLM used for generation and provides the conversational prompts.
     """
-    def __init__(self, model_name="llama3", temperature=0.2):
+    def __init__(self, model_name="llama3.2:3b", temperature=0.2):
         print(f"Initializing Answer Generator with ChatOllama model: {model_name}")
         
         self.llm = ChatOllama(

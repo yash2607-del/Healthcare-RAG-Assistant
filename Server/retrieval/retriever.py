@@ -19,7 +19,7 @@ class AdvancedRetriever:
         # 1. Base Retriever
         self.retriever = self.chroma_client.as_retriever(
             search_type="similarity",
-            search_kwargs={"k": 20}
+            search_kwargs={"k": 5}
         )
         
     def get_retriever(self):
