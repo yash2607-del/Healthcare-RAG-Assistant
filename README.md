@@ -1,36 +1,57 @@
 # Healthcare RAG Assistant
 
-This project is a Conversational Retrieval-Augmented Generation (RAG) assistant designed for diagnostic test query routing, retrieval, and answering. It enables users to ask about test availability, pricing, methodologies, and general diagnostic information, powered by a local Large Language Model (Llama 3 via Ollama) and a local semantic search engine.
+## Introduction
 
-## Architecture
+An AI-powered healthcare assistant designed to provide accurate and contextual information from a trusted healthcare knowledge base. The system uses Retrieval-Augmented Generation (RAG) to understand user queries, retrieve relevant information, and generate grounded responses.
 
-The system consists of three main components:
-1. **Frontend**: A responsive web application built with React, styled with vanilla CSS supporting light/dark modes.
-2. **Backend**: A FastAPI server running the conversational RAG chain.
-3. **Data & Storage**: An Excel-based diagnostics catalog ingested into a Chroma vector database using semantic embeddings and cross-encoder rerankers.
+## Project Objective
 
-
-## Tech Stack
-
-### Frontend
-- React.js
-
-### Backend
-- Python
-- FastAPI
-- LangChain
-- ChromaDB (vector database)
-- Sentence Transformers (BAAI/bge-base-en-v1.5)
-- Cross-Encoder Reranker (BAAI/bge-reranker-base)
-  
-
-### Local LLM
-- Ollama
-- Llama 3 (8B Parameter Model)
-
+The objective is to simplify access to healthcare and diagnostic information by replacing traditional keyword-based searching with an intelligent conversational interface that can understand natural-language queries and provide relevant information from verified company data.
 
 ## Key Features
-- **Smart Query Routing**: Outgoing queries are dynamically classified into "diagnostics" (requires database retrieval) or "chitchat" (general greeting/conversational queries) to minimize computational overhead.
-- **Advanced Context Retrieval**: Retrieves search results using cosine similarity, which are then re-ordered by relevance using a Cross-Encoder reranker.
-- **Local Execution**: All data processing, vector searches, and LLM inferences are completed locally for data privacy and low latency.
-- **Conversational Memory**: Retains session-based chat history to support contextual follow-up questions.
+
+- Natural language query understanding
+- RAG-based information retrieval
+- Semantic search
+- PDF and Excel document support
+- Relevant context retrieval and reranking
+- Context-aware conversations
+- Test and package information retrieval
+- Diagnostic centre information retrieval
+- Pricing and related diagnostic information
+- Fallback handling for unsupported queries
+- Fast AI-powered responses
+
+## Technology Stack
+
+- **Frontend:** React, Tailwind CSS
+- **Backend:** Python, FastAPI
+- **RAG:** LangChain
+- **LLM:** Llama via Groq API
+- **Embeddings:** BGE Embeddings
+- **Reranking:** BGE Cross-Encoder
+- **Vector Database:** ChromaDB
+- **Version Control:** Git, GitHub
+
+## Dataset
+
+The knowledge base is built using healthcare and diagnostic information provided by the lords pathology , including structured Excel data and PDF documents.
+
+The dataset contains information such as:
+
+- Diagnostic test details
+- Test pricing
+- Test packages
+- Sample requirements
+- Diagnostic centre information
+- Reporting and processing information
+- Policy related documents 
+
+## Future Scope
+
+- User authentication and Role-Based Access Control
+- Department-wise knowledge access
+- Multilingual support
+- Voice-based assistant
+- Appointment and test booking integration
+- Integration with additional healthcare systems
