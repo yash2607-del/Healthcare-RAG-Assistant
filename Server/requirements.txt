@@ -12,3 +12,5 @@ langchain-google-genai
 numpy
 sentence-transformers
 sentencepiece
+
+    
