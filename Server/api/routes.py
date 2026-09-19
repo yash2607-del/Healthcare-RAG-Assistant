@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from rag.chain import RAGChain
-from retrieval.query_router import QueryRouter
-from rag.answer_generator import AnswerGenerator
 import traceback
 
 router = APIRouter()
@@ -10,7 +8,6 @@ router = APIRouter()
 # Initialize our AI components once when the server starts
 print("Loading AI Components for API...")
 rag_chain = RAGChain()
-# query_router = QueryRouter(llm=answer_generator.get_llm()) # Disabled for speed
 print("AI Components Loaded!")
 
 # Request/Response Models

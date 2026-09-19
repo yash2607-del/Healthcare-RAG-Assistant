@@ -1,6 +1,5 @@
 from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
-from langchain_classic.chains.history_aware_retriever import create_history_aware_retriever
 from langchain_core.runnables.history import RunnableWithMessageHistory
 import sys
 import os
@@ -26,11 +25,6 @@ class RAGChain:
         # 2. Initialize Retriever
         self.advanced_retriever = AdvancedRetriever(llm=llm)
         retriever = self.advanced_retriever.get_retriever()
-        
-        # 3. Create History-Aware Retriever to rephrase follow-ups!
-        history_aware_retriever = create_history_aware_retriever(
-            llm, retriever, self.generator.get_contextualize_q_prompt()
-        )
         
         from langchain_core.runnables import RunnableLambda
         

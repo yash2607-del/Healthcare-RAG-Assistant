@@ -18,7 +18,7 @@ class ExcelLoader:
                 base_dir,
                 "data",
                 "excel",
-                "Lord Test MRP and DOS Complete Details copy.xlsx",
+                "Lord Test MRP and DOS Complete Details External.xlsx",
             )
         self.excel_path = excel_path
 

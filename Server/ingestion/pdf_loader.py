@@ -18,32 +18,38 @@ def ingest_pdf():
     docs = loader.load()
     full_text = "\n".join([doc.page_content for doc in docs])
     
-    # We will split the text perfectly by 'Centre ID:' or 'Centre  ID:'
-    # The text contains lots of extra spaces due to PDF extraction
-    # We use a regex to split exactly at the start of each centre
+    # The text contains newlines between almost every word due to PDF extraction
+    # We will normalize all whitespace to single spaces first
+    clean_text = re.sub(r'\s+', ' ', full_text)
+    
+    # Now we split by "Centre ID:"
+    # Note: re.split with a capture group keeps the delimiter in the list
+    centre_splits = re.split(r'(Centre ID:)', clean_text, flags=re.IGNORECASE)
+    
+    # Combine the delimiter and the text
     chunks = []
-    
-    # Clean up double spaces for easier parsing, but keep newlines
-    clean_text = re.sub(r' +', ' ', full_text)
-    
-    centre_splits = re.split(r'(Centre ID:.*?)(?=Centre ID:|$)', clean_text, flags=re.IGNORECASE | re.DOTALL)
-    
-    for split in centre_splits:
-        split = split.strip()
-        if not split.lower().startswith('centre id:'):
-            continue
+    for i in range(1, len(centre_splits), 2):
+        if i + 1 < len(centre_splits):
+            split_text = centre_splits[i] + centre_splits[i+1]
+        else:
+            split_text = centre_splits[i]
             
-        # Extract state for metadata if possible
+        split_text = split_text.strip()
+        
+        # Extract state
         state = "Unknown"
-        state_match = re.search(r'State:\s*(.*?)\n', split, re.IGNORECASE)
+        state_match = re.search(r'State:\s*(.*?)\s*(?:City:|Service Type:|Trust Indicator:)', split_text, re.IGNORECASE)
         if state_match:
             state = state_match.group(1).strip()
             
-        centre_match = re.search(r'Centre Name:\s*(.*?)\n', split, re.IGNORECASE)
-        centre_name = centre_match.group(1).strip() if centre_match else "Unknown Centre"
-        
+        # Extract centre name
+        centre_name = "Unknown Centre"
+        centre_match = re.search(r'Centre Name:\s*(.*?)\s*State:', split_text, re.IGNORECASE)
+        if centre_match:
+            centre_name = centre_match.group(1).strip()
+            
         doc = Document(
-            page_content=split,
+            page_content=split_text,
             metadata={
                 "source": "centre_info",
                 "state": state,
